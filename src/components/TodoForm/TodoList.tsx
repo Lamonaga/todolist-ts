@@ -16,7 +16,7 @@ interface IInputCheck {
 
 const InputStyled = styled.input``;
 
-const TodoListContainer = styled.ul<IInputCheck>`
+const TodoListContainer = styled.li<IInputCheck>`
   display: flex;
   justify-content: space-between;
   width: 500px;
@@ -25,7 +25,8 @@ const TodoListContainer = styled.ul<IInputCheck>`
   padding: 15px;
   background: ${(props) => (props.inputChecked === true ? "red" : null)};
 `;
-const LiStyled = styled.li`
+
+const TitleStyled = styled.div`
   list-style-type: none;
 `;
 
@@ -37,16 +38,19 @@ const IconDeleteStyled = styled.i`
 `;
 
 export const TodoList: React.FC<ITodos> = (props) => {
-  const [inputChecked, setInputChecked] = useState<boolean>(false);
+  const [inputChecked, setInputChecked] = useState<boolean>(true);
+  useEffect(() => {
+    console.log("ты пидр");
+  }, [inputChecked]);
 
   const handleRemove = (id: number) => {
     props.removeTodo(id);
   };
   return (
-    <div>
+    <ul>
       {props.todos.map((todo) => {
         return (
-          <TodoListContainer inputChecked={inputChecked} key={todo.id}>
+          <TodoListContainer inputChecked={todo.completed} key={todo.id}>
             <InputStyled
               type="checkbox"
               defaultChecked={todo.completed}
@@ -55,7 +59,7 @@ export const TodoList: React.FC<ITodos> = (props) => {
                 setInputChecked(!inputChecked);
               }}
             />
-            <LiStyled>{todo.title}</LiStyled>
+            <TitleStyled>{todo.title}</TitleStyled>
             <IconDeleteStyled
               onClick={handleRemove.bind(null, todo.id)}
               className="material-icons red-text"
@@ -65,6 +69,6 @@ export const TodoList: React.FC<ITodos> = (props) => {
           </TodoListContainer>
         );
       })}
-    </div>
+    </ul>
   );
 };
