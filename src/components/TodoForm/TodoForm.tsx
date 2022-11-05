@@ -31,13 +31,19 @@ export const TodoForm: React.FC<ITodo> = (props) => {
   };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    props.addTodo(value);
+
+    if (value.trim()) {
+      props.addTodo(value);
+    }
+    setValue("");
   };
 
   return (
     <ContainerFormStyled onSubmit={handleSubmit}>
-      <InputFormStyled type="text" onChange={changeHandler} />
-      <SubmitButtonStyled type="submit">Отправить</SubmitButtonStyled>
+      <InputFormStyled type="text" value={value} onChange={changeHandler} />
+      <SubmitButtonStyled disabled={!value} type="submit">
+        Отправить
+      </SubmitButtonStyled>
     </ContainerFormStyled>
   );
 };

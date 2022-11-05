@@ -16,8 +16,6 @@ const AppContainerStyled = styled.div`
 const App: React.FC = () => {
   const [todos, setTodos] = useState<ITodo[]>([]);
 
-
-
   const addTodo = (title: string) => {
     const newTodo: ITodo = {
       title: title,

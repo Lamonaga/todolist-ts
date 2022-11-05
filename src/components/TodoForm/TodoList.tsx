@@ -23,12 +23,11 @@ const TodoListContainer = styled.li<IInputCheck>`
   border: 1px grey solid;
   border-radius: 10px;
   padding: 15px;
-  background: ${(props) => (props.inputChecked === true ? "red" : null)};
+  margin-top: 10px;
+  background: ${(props) => (props.inputChecked === true ? "green" : null)};
 `;
 
-const TitleStyled = styled.div`
-  list-style-type: none;
-`;
+const TitleStyled = styled.input``;
 
 const IconDeleteStyled = styled.i`
   cursor: pointer;
@@ -59,7 +58,7 @@ export const TodoList: React.FC<ITodos> = (props) => {
                 setInputChecked(!inputChecked);
               }}
             />
-            <TitleStyled>{todo.title}</TitleStyled>
+            <TitleStyled value={todo.title} />
             <IconDeleteStyled
               onClick={handleRemove.bind(null, todo.id)}
               className="material-icons red-text"
