@@ -40,10 +40,26 @@ const App: React.FC = () => {
     );
   };
 
+  const onEdit = (id: number, value: string) => {
+    setTodos(
+      todos.map((todo) => {
+        if (todo.id === id) {
+          todo.title = value;
+        }
+        return todo;
+      })
+    );
+  };
+
   return (
     <AppContainerStyled>
       <TodoForm addTodo={addTodo} />
-      <TodoList onToggle={onToggle} todos={todos} removeTodo={removeTodo} />
+      <TodoList
+        onToggle={onToggle}
+        todos={todos}
+        removeTodo={removeTodo}
+        onEdit={onEdit}
+      />
     </AppContainerStyled>
   );
 };
