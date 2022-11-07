@@ -30,11 +30,14 @@ const App: React.FC = () => {
   };
 
   const onToggle = (id: number) => {
-    todos.map((todo) => {
-      if (todo.id === id) {
-        todo.completed = !todo.completed;
-      }
-    });
+    setTodos(
+      todos.map((todo) => {
+        if (todo.id === id) {
+          todo.completed = !todo.completed;
+        }
+        return todo;
+      })
+    );
   };
 
   return (

@@ -37,10 +37,7 @@ const IconDeleteStyled = styled.i`
 `;
 
 export const TodoList: React.FC<ITodos> = (props) => {
-  const [inputChecked, setInputChecked] = useState<boolean>(true);
-  useEffect(() => {
-    console.log("ты пидр");
-  }, [inputChecked]);
+  useEffect(() => {}, [props.todos]);
 
   const handleRemove = (id: number) => {
     props.removeTodo(id);
@@ -55,10 +52,9 @@ export const TodoList: React.FC<ITodos> = (props) => {
               defaultChecked={todo.completed}
               onClick={() => {
                 props.onToggle(todo.id);
-                setInputChecked(!inputChecked);
               }}
             />
-            <TitleStyled value={todo.title} />
+            <TitleStyled value={todo.title} readOnly={true} />
             <IconDeleteStyled
               onClick={handleRemove.bind(null, todo.id)}
               className="material-icons red-text"
