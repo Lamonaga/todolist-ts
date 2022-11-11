@@ -5,6 +5,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { ThemeProvider } from "styled-components";
 import { myTheme } from "./my-them";
+import "firebase/firestore";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

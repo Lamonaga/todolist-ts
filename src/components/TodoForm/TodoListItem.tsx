@@ -46,6 +46,7 @@ const IconDeleteStyled = styled.i`
 `;
 
 export const TodoItemList: React.FC<ITodoItem> = (props) => {
+  
   const [todoItemValue, setTodoItemValue] = useState<string>(props.todo.title);
 
   const [inputEditCheck, setInputEditCheck] = useState<boolean>(false);

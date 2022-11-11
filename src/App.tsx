@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { TodoForm } from "./components/TodoForm/TodoForm";
 import { TodoList } from "./components/TodoForm/TodoList";
+import { db } from "./firebase";
 import { ITodo } from "./interfaces";
 
 const AppContainerStyled = styled.div`
@@ -14,6 +15,20 @@ const AppContainerStyled = styled.div`
 `;
 
 const App: React.FC = () => {
+  useEffect(() => {
+    db.collection("todoList")
+      .get()
+      .then((querySnapshot) => {
+        console.log("todo", querySnapshot);
+
+        querySnapshot.forEach((doc) => {
+          console.log(doc);
+
+          console.log("todo", `${doc.id} => ${doc.data()}`);
+        });
+      });
+  }, []);
+
   const [todos, setTodos] = useState<ITodo[]>([]);
 
   const addTodo = (title: string) => {
@@ -23,6 +38,19 @@ const App: React.FC = () => {
       completed: false,
     };
     setTodos((prev: ITodo[]) => [newTodo, ...prev]);
+
+    db.collection("todoList")
+      .add({
+        title: title,
+        id: Date.now(),
+        completed: false,
+      })
+      .then((docRef) => {
+        console.log("Document written with ID: ", docRef.id);
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error);
+      });
   };
 
   const removeTodo = (id: number) => {
