@@ -15,21 +15,19 @@ const AppContainerStyled = styled.div`
 `;
 
 const App: React.FC = () => {
+  const [todos, setTodos] = useState<ITodo[]>([]);
+
   useEffect(() => {
+    console.log("pidr");
     db.collection("todoList")
       .get()
       .then((querySnapshot) => {
-        console.log("todo", querySnapshot);
-
         querySnapshot.forEach((doc) => {
-          console.log(doc);
-
-          console.log("todo", `${doc.id} => ${doc.data()}`);
+          const item = doc.data();
+          setTodos((prev: any) => [item, ...prev]);
         });
       });
   }, []);
-
-  const [todos, setTodos] = useState<ITodo[]>([]);
 
   const addTodo = (title: string) => {
     const newTodo: ITodo = {

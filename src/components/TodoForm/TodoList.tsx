@@ -14,24 +14,11 @@ interface ITodos {
 }
 
 export const TodoList: React.FC<ITodos> = (props) => {
-  useEffect(() => {
-    db.collection("todoList")
-      .add({
-        title: "Ada",
-        id: 123,
-        completed: true,
-      })
-      .then((docRef) => {
-        console.log("Document written with ID: ", docRef.id);
-      })
-      .catch((error) => {
-        console.error("Error adding document: ", error);
-      });
-  }, [props.todos]);
+  useEffect(() => {}, [props.todos]);
 
   return (
     <ul>
-      {props.todos.map((todo) => {
+      {props.todos.map((todo: ITodo) => {
         return (
           <TodoItemList
             key={todo.id}
