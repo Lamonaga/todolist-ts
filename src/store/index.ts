@@ -1,10 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { applyMiddleware, combineReducers } from "redux";
-import thunk from "redux-thunk";
+import todoReducer  from "./todoSlice";
 
-const rootReducer = combineReducers({
-  reducers: {
-    dataTodoList: todoReducers,
+const store = configureStore({
+  reducer: {
+    todos: todoReducer,
   },
 });
-export const store = configureStore(rootReducer);
+
+export default store;
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

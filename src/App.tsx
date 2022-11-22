@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import { TodoForm } from "./components/TodoForm/TodoForm";
 import { TodoList } from "./components/TodoForm/TodoList";
-import { db } from "./firebase";
-import { ITodo } from "./interfaces";
+import { useAppSelector } from "./hook";
 
 const AppContainerStyled = styled.div`
   align-items: center;
@@ -15,77 +14,69 @@ const AppContainerStyled = styled.div`
 `;
 
 const App: React.FC = () => {
-  const [todos, setTodos] = useState<ITodo[]>([]);
+  const todos = useAppSelector((state) => state.todos.todos);
 
-  useEffect(() => {
-    console.log("pidr");
-    db.collection("todoList")
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          const item = doc.data();
-          setTodos((prev: any) => [item, ...prev]);
-        });
-      });
-  }, []);
+  // const [todos, setTodos] = useState<ITodo[]>([]);
 
-  const addTodo = (title: string) => {
-    const newTodo: ITodo = {
-      title: title,
-      id: Date.now(),
-      completed: false,
-    };
-    setTodos((prev: ITodo[]) => [newTodo, ...prev]);
+  // useEffect(() => {
+  //   db.collection("todoList")
+  //     .get()
+  //     .then((querySnapshot) => {
+  //       querySnapshot.forEach((doc) => {
+  //         const item = doc.data();
+  //         setTodos((prev: any) => [item, ...prev]);
+  //       });
+  //     });
+  // }, []);
 
-    db.collection("todoList")
-      .add({
-        title: title,
-        id: Date.now(),
-        completed: false,
-      })
-      .then((docRef) => {
-        console.log("Document written with ID: ", docRef.id);
-      })
-      .catch((error) => {
-        console.error("Error adding document: ", error);
-      });
-  };
+  // const addTodo = (title: string) => {
+  //   const newTodo: ITodo = {
+  //     title: title,
+  //     id: Date.now(),
+  //     completed: false,
+  //   };
+  //   setTodos((prev: ITodo[]) => [newTodo, ...prev]);
 
-  const removeTodo = (id: number) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
-  };
+  //   db.collection("todoList")
+  //     .add({
+  //       title: title,
+  //       id: Date.now(),
+  //       completed: false,
+  //     })
+  //     .then((docRef) => {
+  //       console.log("Document written with ID: ", docRef.id);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error adding document: ", error);
+  //     });
+  // };
 
-  const onToggle = (id: number) => {
-    setTodos(
-      todos.map((todo) => {
-        if (todo.id === id) {
-          todo.completed = !todo.completed;
-        }
-        return todo;
-      })
-    );
-  };
+  // const onToggle = (id: number) => {
+  //   setTodos(
+  //     todos.map((todo) => {
+  //       if (todo.id === id) {
+  //         todo.completed = !todo.completed;
+  //       }
+  //       return todo;
+  //     })
+  //   );
+  // };
 
-  const onEdit = (id: number, value: string) => {
-    setTodos(
-      todos.map((todo) => {
-        if (todo.id === id) {
-          todo.title = value;
-        }
-        return todo;
-      })
-    );
-  };
+  // const onEdit = (id: number, value: string) => {
+  //   setTodos(
+  //     todos.map((todo) => {
+  //       if (todo.id === id) {
+  //         todo.title = value;
+  //       }
+  //       return todo;
+  //     })
+  //   );
+  // };
 
   return (
     <AppContainerStyled>
-      <TodoForm addTodo={addTodo} />
-      <TodoList
-        onToggle={onToggle}
-        todos={todos}
-        removeTodo={removeTodo}
-        onEdit={onEdit}
-      />
+      <TodoForm />
+      <TodoList todos={todos} />
     </AppContainerStyled>
   );
 };

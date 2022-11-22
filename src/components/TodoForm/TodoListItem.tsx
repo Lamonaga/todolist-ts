@@ -4,6 +4,9 @@ import styled from "styled-components";
 
 import { ITodo } from "../../interfaces";
 
+import { useAppDispatch } from "../../hook";
+import { onEdit, removeTodo, toggleComplete } from "../../store/todoSlice";
+
 interface IInputCheck {
   inputChecked: boolean;
   inputEditCheck: boolean;
@@ -11,9 +14,6 @@ interface IInputCheck {
 
 interface ITodoItem {
   todo: ITodo;
-  removeTodo(id: number): void;
-  onToggle(id: number): void;
-  onEdit(id: number, value: string): void;
 }
 
 const InputStyled = styled.input``;
@@ -46,14 +46,11 @@ const IconDeleteStyled = styled.i`
 `;
 
 export const TodoItemList: React.FC<ITodoItem> = (props) => {
-  
+  const dispatch = useAppDispatch();
+
   const [todoItemValue, setTodoItemValue] = useState<string>(props.todo.title);
 
   const [inputEditCheck, setInputEditCheck] = useState<boolean>(false);
-
-  const handleRemove = (id: number) => {
-    props.removeTodo(id);
-  };
 
   const handleTodoItemChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -62,7 +59,11 @@ export const TodoItemList: React.FC<ITodoItem> = (props) => {
 
   const handleEditTodoItem = (e: React.FocusEvent<HTMLInputElement>) => {
     e.preventDefault();
-    props.onEdit(props.todo.id, todoItemValue);
+    const dataEdit = {
+      id: props.todo.id,
+      value: todoItemValue,
+    };
+    dispatch(onEdit(dataEdit));
     setInputEditCheck(false);
   };
 
@@ -79,7 +80,7 @@ export const TodoItemList: React.FC<ITodoItem> = (props) => {
         type="checkbox"
         defaultChecked={props.todo.completed}
         onClick={() => {
-          props.onToggle(props.todo.id);
+          dispatch(toggleComplete(props.todo.id));
         }}
       />
       <TitleInputStyled
@@ -90,7 +91,7 @@ export const TodoItemList: React.FC<ITodoItem> = (props) => {
         onChange={handleTodoItemChange}
       />
       <IconDeleteStyled
-        onClick={handleRemove.bind(null, props.todo.id)}
+        onClick={() => dispatch(removeTodo(props.todo.id))}
         className="material-icons red-text"
       >
         delete

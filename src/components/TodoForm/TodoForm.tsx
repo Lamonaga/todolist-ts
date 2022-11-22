@@ -1,10 +1,7 @@
 import React, { useState } from "react";
-
 import styled from "styled-components";
-
-interface ITodo {
-  addTodo(title: string): void;
-}
+import { useAppDispatch } from "../../hook";
+import { addTodo } from "../../store/todoSlice";
 
 const ContainerFormStyled = styled.form`
   display: flex;
@@ -23,7 +20,9 @@ const InputFormStyled = styled.input`
   border: 1px grey solid;
 `;
 
-export const TodoForm: React.FC<ITodo> = (props) => {
+export const TodoForm: React.FC = () => {
+  const dispatch = useAppDispatch();
+
   const [value, setValue] = useState<string>("");
 
   const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,9 +30,8 @@ export const TodoForm: React.FC<ITodo> = (props) => {
   };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (value.trim()) {
-      props.addTodo(value);
+      dispatch(addTodo(value));
     }
     setValue("");
   };
