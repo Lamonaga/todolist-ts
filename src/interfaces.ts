@@ -3,3 +3,12 @@ export interface ITodo {
   id: number;
   completed: boolean;
 }
+
+export interface IDataEdit {
+  id: number;
+  value: string;
+}
+
+export interface TodosState {
+  todos: ITodo[];
+}

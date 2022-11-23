@@ -1,18 +1,30 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ITodo } from "../interfaces";
-
-interface TodosState {
-  todos: ITodo[];
-}
-
-interface IDataEdit {
-  id: number;
-  value: string;
-}
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { db } from "../firebase";
+import { IDataEdit, ITodo, TodosState } from "../interfaces";
 
 const initialState: TodosState = {
   todos: [],
 };
+
+export const fetchDataTodos = createAsyncThunk<ITodo[], void>(
+  "todos/fetchDataTodos",
+  async (_) => {
+    const response: Promise<ITodo[]> = db
+      .collection("todoList")
+      .get()
+      .then((querySnapshot) => {
+        const data: ITodo[] = [];
+        querySnapshot.forEach((doc) => {
+          const item = doc.data() as ITodo;
+          data.push(item);
+        });
+        return data;
+      });
+    const data = await response;
+    console.log(data);
+    return data;
+  }
+);
 
 const todoSlice = createSlice({
   name: "todos",
@@ -45,6 +57,11 @@ const todoSlice = createSlice({
         return todo;
       });
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchDataTodos.fulfilled, (state, action) => {
+      state.todos = action.payload;
+    });
   },
 });
 

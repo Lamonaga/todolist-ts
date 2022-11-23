@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { TodoForm } from "./components/TodoForm/TodoForm";
 import { TodoList } from "./components/TodoForm/TodoList";
-import { useAppSelector } from "./hook";
+import { useAppSelector, useAppDispatch } from "./hook";
+import { fetchDataTodos } from "./store/todoSlice";
 
 const AppContainerStyled = styled.div`
   align-items: center;
@@ -15,19 +16,12 @@ const AppContainerStyled = styled.div`
 
 const App: React.FC = () => {
   const todos = useAppSelector((state) => state.todos.todos);
-
+  const dispatch = useAppDispatch();
   // const [todos, setTodos] = useState<ITodo[]>([]);
 
-  // useEffect(() => {
-  //   db.collection("todoList")
-  //     .get()
-  //     .then((querySnapshot) => {
-  //       querySnapshot.forEach((doc) => {
-  //         const item = doc.data();
-  //         setTodos((prev: any) => [item, ...prev]);
-  //       });
-  //     });
-  // }, []);
+  useEffect(() => {
+    dispatch(fetchDataTodos());
+  }, [dispatch]);
 
   // const addTodo = (title: string) => {
   //   const newTodo: ITodo = {
