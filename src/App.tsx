@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { TodoForm } from "./components/TodoForm/TodoForm";
 import { TodoList } from "./components/TodoForm/TodoList";
-import { ITodo } from "./interfaces";
+import { useAppSelector, useAppDispatch } from "./hook";
+import { fetchDataTodos } from "./store/todoSlice";
 
 const AppContainerStyled = styled.div`
   align-items: center;
@@ -14,52 +15,62 @@ const AppContainerStyled = styled.div`
 `;
 
 const App: React.FC = () => {
-  const [todos, setTodos] = useState<ITodo[]>([]);
+  const todos = useAppSelector((state) => state.todos.todos);
+  const dispatch = useAppDispatch();
+  // const [todos, setTodos] = useState<ITodo[]>([]);
 
-  const addTodo = (title: string) => {
-    const newTodo: ITodo = {
-      title: title,
-      id: Date.now(),
-      completed: false,
-    };
-    setTodos((prev: ITodo[]) => [newTodo, ...prev]);
-  };
+  useEffect(() => {
+    dispatch(fetchDataTodos());
+  }, [dispatch]);
 
-  const removeTodo = (id: number) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
-  };
+  // const addTodo = (title: string) => {
+  //   const newTodo: ITodo = {
+  //     title: title,
+  //     id: Date.now(),
+  //     completed: false,
+  //   };
+  //   setTodos((prev: ITodo[]) => [newTodo, ...prev]);
 
-  const onToggle = (id: number) => {
-    setTodos(
-      todos.map((todo) => {
-        if (todo.id === id) {
-          todo.completed = !todo.completed;
-        }
-        return todo;
-      })
-    );
-  };
+  //   db.collection("todoList")
+  //     .add({
+  //       title: title,
+  //       id: Date.now(),
+  //       completed: false,
+  //     })
+  //     .then((docRef) => {
+  //       console.log("Document written with ID: ", docRef.id);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error adding document: ", error);
+  //     });
+  // };
 
-  const onEdit = (id: number, value: string) => {
-    setTodos(
-      todos.map((todo) => {
-        if (todo.id === id) {
-          todo.title = value;
-        }
-        return todo;
-      })
-    );
-  };
+  // const onToggle = (id: number) => {
+  //   setTodos(
+  //     todos.map((todo) => {
+  //       if (todo.id === id) {
+  //         todo.completed = !todo.completed;
+  //       }
+  //       return todo;
+  //     })
+  //   );
+  // };
+
+  // const onEdit = (id: number, value: string) => {
+  //   setTodos(
+  //     todos.map((todo) => {
+  //       if (todo.id === id) {
+  //         todo.title = value;
+  //       }
+  //       return todo;
+  //     })
+  //   );
+  // };
 
   return (
     <AppContainerStyled>
-      <TodoForm addTodo={addTodo} />
-      <TodoList
-        onToggle={onToggle}
-        todos={todos}
-        removeTodo={removeTodo}
-        onEdit={onEdit}
-      />
+      <TodoForm />
+      <TodoList todos={todos} />
     </AppContainerStyled>
   );
 };
