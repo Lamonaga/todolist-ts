@@ -9,6 +9,3 @@ export interface IDataEdit {
   value: string;
 }
 
-export interface TodosState {
-  todos: ITodo[];
-}
