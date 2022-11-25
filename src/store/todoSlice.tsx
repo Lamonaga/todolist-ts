@@ -27,7 +27,6 @@ export const fetchDataTodos = createAsyncThunk<ITodo[], void>(
         return data;
       });
     const data = await response;
-    console.log(data);
     return data;
   }
 );

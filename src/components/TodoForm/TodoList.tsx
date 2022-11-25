@@ -9,7 +9,7 @@ interface ITodos {
 }
 
 export const TodoList: React.FC<ITodos> = (props) => {
-  const isLoading = useAppSelector((state) => state.todos.loading);
+  const isLoading = useAppSelector((state) => state.todos.todoReducer.loading);
 
   useEffect(() => {}, [props.todos]);
   return (
