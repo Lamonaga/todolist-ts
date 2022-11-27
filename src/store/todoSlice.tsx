@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { db } from "../firebase";
 import { IDataEdit, ITodo } from "../interfaces";
 
@@ -12,40 +12,22 @@ const initialState: TodosState = {
   loading: true,
 };
 
-export const fetchDataTodos = createAsyncThunk<ITodo[], void>(
-  "todos/fetchDataTodos",
-  async (_) => {
-    const response: Promise<ITodo[]> = db
-      .collection("todoList")
-      .get()
-      .then((querySnapshot) => {
-        const data: ITodo[] = [];
-        querySnapshot.forEach((doc) => {
-          const item = doc.data() as ITodo;
-          data.push(item);
-        });
-        return data;
-      });
-    const data = await response;
-    return data;
-  }
-);
-
-// const fetchRequestTodoItem = createAsyncThunk<ITodo, void>(
-//   "todos/fetchRequestTodoItem",
+// export const fetchDataTodos = createAsyncThunk<ITodo[], void>(
+//   "todos/fetchDataTodos",
 //   async (_) => {
-//     db.collection("todoList")
-//       .add({
-//         title: title,
-//         id: Date.now(),
-//         completed: false,
-//       })
-//       .then((docRef) => {
-//         console.log("Document written with ID: ", docRef.id);
-//       })
-//       .catch((error) => {
-//         console.error("Error adding document: ", error);
+//     const response: Promise<ITodo[]> = db
+//       .collection("todoList")
+//       .get()
+//       .then((querySnapshot) => {
+//         const data: ITodo[] = [];
+//         querySnapshot.forEach((doc) => {
+//           const item = doc.data() as ITodo;
+//           data.push(item);
+//         });
+//         return data;
 //       });
+//     const data = await response;
+//     return data;
 //   }
 // );
 
@@ -102,15 +84,6 @@ const todoSlice = createSlice({
         return todo;
       });
     },
-  },
-  extraReducers: (builder) => {
-    builder.addCase(fetchDataTodos.pending, (state) => {
-      state.loading = false;
-    });
-    builder.addCase(fetchDataTodos.fulfilled, (state, action) => {
-      state.todos = action.payload;
-      state.loading = true;
-    });
   },
 });
 

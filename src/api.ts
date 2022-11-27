@@ -7,26 +7,19 @@ interface IQueryTodo {
 }
 
 export const todosApi = createApi({
-  reducerPath: "todos",
+  reducerPath: "reqTodos",
   baseQuery: fakeBaseQuery(),
-  tagTypes: ["todos"],
+  tagTypes: ["reqTodos"],
   endpoints: (builder) => ({
     fetchTodos: builder.query<IQueryTodo, void>({
-      queryFn() {
+      async queryFn() {
         try {
-          console.log("asdasdasdasdasd");
-          const response: Promise<IQueryTodo> = db
-            .collection("todoList")
-            .get()
-            .then((querySnapshot) => {
-              const dataTodos: IQueryTodo = { todos: [] };
-              querySnapshot.forEach((doc) => {
-                const item = doc.data() as ITodo;
-                dataTodos.todos.push(item);
-              });
-              return dataTodos;
-            });
-          const dataTodos = response;
+          const response = await db.collection("todoList").get();
+          const dataTodos: IQueryTodo = { todos: [] };
+          response.docs.forEach((doc) => {
+            const item = doc.data() as ITodo;
+            dataTodos.todos.push(item);
+          });
           return { data: dataTodos };
         } catch (err) {
           return { error: err };

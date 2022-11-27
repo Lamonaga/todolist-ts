@@ -8,4 +8,3 @@ export interface IDataEdit {
   id: number;
   value: string;
 }
-

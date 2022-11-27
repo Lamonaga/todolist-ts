@@ -1,23 +1,22 @@
 import React, { useEffect } from "react";
+import { useFetchTodosQuery } from "../../api";
 
-import { useAppSelector } from "../../hook";
 import { ITodo } from "../../interfaces";
 import { TodoItemList } from "./TodoListItem";
 
-interface ITodos {
-  todos: ITodo[];
-}
+export const TodoList: React.FC = () => {
+  const { data } = useFetchTodosQuery();
 
-export const TodoList: React.FC<ITodos> = (props) => {
-  const isLoading = useAppSelector((state) => state.todos.todoReducer.loading);
-
-  useEffect(() => {}, [props.todos]);
+  useEffect(() => {}, [data]);
   return (
     <ul>
-      {!isLoading ? <div> LOADING</div> : null}
-      {props.todos.map((todo: ITodo) => {
-        return <TodoItemList key={todo.id} todo={todo} />;
-      })}
+      {data !== undefined ? (
+        data.todos.map((todo: ITodo) => {
+          return <TodoItemList key={todo.id} todo={todo} />;
+        })
+      ) : (
+        <div> LOADING</div>
+      )}
     </ul>
   );
 };
