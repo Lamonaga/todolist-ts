@@ -6,6 +6,10 @@ interface IQueryTodo {
   todos: ITodo[];
 }
 
+interface IRemoveTodo {
+  id: number;
+}
+
 export const todosApi = createApi({
   reducerPath: "reqTodos",
   baseQuery: fakeBaseQuery(),
@@ -26,7 +30,7 @@ export const todosApi = createApi({
         }
       },
     }),
-    removeFetchTodos: builder.mutation<{}, any>({
+    removeFetchTodos: builder.mutation<{}, IRemoveTodo>({
       async queryFn(todo) {
         try {
           const response = await db.collection("todoList").get();
@@ -41,7 +45,33 @@ export const todosApi = createApi({
         }
       },
     }),
+    addFetchTodos: builder.mutation<{}, ITodo>({
+      queryFn(todo) {
+        try {
+          db.collection("todoList")
+            .add({
+              title: todo.title,
+              id: Date.now(),
+              completed: false,
+            })
+            .then((docRef) => {
+              console.log("Document written with ID: ", docRef.id);
+            })
+            .catch((error) => {
+              console.error("Error adding document: ", error);
+            });
+
+          return { data: "ok" };
+        } catch (err) {
+          return { error: err };
+        }
+      },
+    }),
   }),
 });
 
-export const { useFetchTodosQuery, useRemoveFetchTodosMutation } = todosApi;
+export const {
+  useFetchTodosQuery,
+  useRemoveFetchTodosMutation,
+  useAddFetchTodosMutation,
+} = todosApi;

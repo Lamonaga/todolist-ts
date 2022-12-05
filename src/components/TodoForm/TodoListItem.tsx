@@ -7,6 +7,7 @@ import { ITodo } from "../../interfaces";
 import { useAppDispatch } from "../../hook";
 import { onEdit, toggleComplete } from "../../store/todoSlice";
 import { useFetchTodosQuery, useRemoveFetchTodosMutation } from "../../api";
+import { Spiner } from "../Spiner/Spiner";
 
 interface IInputCheck {
   inputChecked: boolean;
@@ -21,6 +22,7 @@ interface ITodoItem {
 const InputStyled = styled.input``;
 
 const TodoListContainer = styled.li<IInputCheck>`
+  min-height: 30px;
   display: ${(props) => (props.removeOpacityCheck === true ? "none" : "flex")};
   justify-content: space-between;
   width: 500px;
@@ -33,6 +35,8 @@ const TodoListContainer = styled.li<IInputCheck>`
 `;
 
 const TitleInputStyled = styled.input`
+  width: 100%;
+  text-align: center;
   background: inherit;
   border: none;
   &:focus-visible {
@@ -41,33 +45,14 @@ const TitleInputStyled = styled.input`
 `;
 
 const IconDeleteStyled = styled.i`
+  min-width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   &:hover {
     color: red;
   }
-`;
-
-const rotate360 = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-`;
-
-const Spinner = styled.div`
-  animation: ${rotate360} 1s linear infinite;
-  transform: translateZ(0);
-
-  border-top: 1px solid grey;
-  border-right: 1px solid grey;
-  border-bottom: 1px solid grey;
-  border-left: 1px solid black;
-  background: transparent;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
 `;
 
 export const TodoItemList: React.FC<ITodoItem> = (props) => {
@@ -75,7 +60,7 @@ export const TodoItemList: React.FC<ITodoItem> = (props) => {
 
   const [removeTodo, { isLoading }] = useRemoveFetchTodosMutation();
 
-  const result = useFetchTodosQuery();
+  const fetchTotosQuery = useFetchTodosQuery();
 
   const [todoItemValue, setTodoItemValue] = useState<string>(props.todo.title);
 
@@ -129,12 +114,12 @@ export const TodoItemList: React.FC<ITodoItem> = (props) => {
             id: props.todo.id,
           }).then(() => {
             setRemoveOpacity(true);
-            result.refetch();
+            fetchTotosQuery.refetch();
           })
         }
         className="material-icons red-text"
       >
-        {isLoading ? <Spinner /> : <>delete</>}
+        {isLoading ? <Spiner /> : <>delete</>}
       </IconDeleteStyled>
     </TodoListContainer>
   );

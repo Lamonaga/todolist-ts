@@ -7,8 +7,7 @@ import { TodoItemList } from "./TodoListItem";
 export const TodoList: React.FC = () => {
   const { data } = useFetchTodosQuery();
 
-  useEffect(() => {
-  }, [data]);
+  useEffect(() => {}, [data]);
   return (
     <ul>
       {data !== undefined ? (
