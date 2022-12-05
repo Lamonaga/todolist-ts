@@ -6,8 +6,10 @@ interface IQueryTodo {
   todos: ITodo[];
 }
 
-interface IRemoveTodo {
-  id: number;
+interface IFetchTodo {
+  id?: number;
+  title?: string;
+  completed?: boolean;
 }
 
 export const todosApi = createApi({
@@ -29,11 +31,16 @@ export const todosApi = createApi({
           return { error: err };
         }
       },
+      providesTags: ["reqTodos"],
     }),
-    removeFetchTodos: builder.mutation<{}, IRemoveTodo>({
+
+    removeFetchTodos: builder.mutation<{}, IFetchTodo>({
       async queryFn(todo) {
         try {
-          const response = await db.collection("todoList").get();
+          const response = await db
+            .collection("todoList")
+            .orderBy("", "desc")
+            .get();
           response.docs.forEach((doc) => {
             if (doc.data().id === todo.id) {
               doc.ref.delete();
@@ -44,6 +51,7 @@ export const todosApi = createApi({
           return { error: err };
         }
       },
+      invalidatesTags: ["reqTodos"],
     }),
     addFetchTodos: builder.mutation<{}, ITodo>({
       queryFn(todo) {
@@ -66,6 +74,43 @@ export const todosApi = createApi({
           return { error: err };
         }
       },
+      invalidatesTags: ["reqTodos"],
+    }),
+    editFetchTodos: builder.mutation<{}, IFetchTodo>({
+      async queryFn(todo) {
+        try {
+          const response = await db.collection("todoList").get();
+          response.docs.forEach((doc) => {
+            if (doc.data().id === todo.id) {
+              doc.ref.update({
+                title: todo.title,
+              });
+            }
+          });
+          return { data: "ok" };
+        } catch (err) {
+          return { error: err };
+        }
+      },
+      invalidatesTags: ["reqTodos"],
+    }),
+    completedFetchTodos: builder.mutation<{}, IFetchTodo>({
+      async queryFn(todo) {
+        try {
+          const response = await db.collection("todoList").get();
+          response.docs.forEach((doc) => {
+            if (doc.data().id === todo.id) {
+              doc.ref.update({
+                completed: todo.completed,
+              });
+            }
+          });
+          return { data: "ok" };
+        } catch (err) {
+          return { error: err };
+        }
+      },
+      invalidatesTags: ["reqTodos"],
     }),
   }),
 });
@@ -74,4 +119,6 @@ export const {
   useFetchTodosQuery,
   useRemoveFetchTodosMutation,
   useAddFetchTodosMutation,
+  useEditFetchTodosMutation,
+  useCompletedFetchTodosMutation,
 } = todosApi;

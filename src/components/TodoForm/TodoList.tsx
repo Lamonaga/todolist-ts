@@ -5,9 +5,8 @@ import { ITodo } from "../../interfaces";
 import { TodoItemList } from "./TodoListItem";
 
 export const TodoList: React.FC = () => {
-  const { data } = useFetchTodosQuery();
+  const { data } = useFetchTodosQuery("" as any, { refetchOnFocus: true });
 
-  useEffect(() => {}, [data]);
   return (
     <ul>
       {data !== undefined ? (

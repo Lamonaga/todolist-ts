@@ -6,7 +6,12 @@ import { ITodo } from "../../interfaces";
 
 import { useAppDispatch } from "../../hook";
 import { onEdit, toggleComplete } from "../../store/todoSlice";
-import { useFetchTodosQuery, useRemoveFetchTodosMutation } from "../../api";
+import {
+  useCompletedFetchTodosMutation,
+  useEditFetchTodosMutation,
+  useFetchTodosQuery,
+  useRemoveFetchTodosMutation,
+} from "../../api";
 import { Spiner } from "../Spiner/Spiner";
 
 interface IInputCheck {
@@ -58,9 +63,11 @@ const IconDeleteStyled = styled.i`
 export const TodoItemList: React.FC<ITodoItem> = (props) => {
   const dispatch = useAppDispatch();
 
+  const [editTodo] = useEditFetchTodosMutation();
+
   const [removeTodo, { isLoading }] = useRemoveFetchTodosMutation();
 
-  const fetchTotosQuery = useFetchTodosQuery();
+  const [completedTodo] = useCompletedFetchTodosMutation();
 
   const [todoItemValue, setTodoItemValue] = useState<string>(props.todo.title);
 
@@ -75,11 +82,7 @@ export const TodoItemList: React.FC<ITodoItem> = (props) => {
 
   const handleEditTodoItem = (e: React.FocusEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const dataEdit = {
-      id: props.todo.id,
-      value: todoItemValue,
-    };
-    dispatch(onEdit(dataEdit));
+    editTodo({ title: todoItemValue, id: props.todo.id });
     setInputEditCheck(false);
   };
 
@@ -99,6 +102,10 @@ export const TodoItemList: React.FC<ITodoItem> = (props) => {
         defaultChecked={props.todo.completed}
         onClick={() => {
           dispatch(toggleComplete(props.todo.id));
+          completedTodo({
+            id: props.todo.id,
+            completed: !props.todo.completed,
+          });
         }}
       />
       <TitleInputStyled
@@ -114,7 +121,6 @@ export const TodoItemList: React.FC<ITodoItem> = (props) => {
             id: props.todo.id,
           }).then(() => {
             setRemoveOpacity(true);
-            fetchTotosQuery.refetch();
           })
         }
         className="material-icons red-text"
