@@ -26,7 +26,22 @@ export const todosApi = createApi({
         }
       },
     }),
+    removeFetchTodos: builder.mutation<{}, any>({
+      async queryFn(todo) {
+        try {
+          const response = await db.collection("todoList").get();
+          response.docs.forEach((doc) => {
+            if (doc.data().id === todo.id) {
+              doc.ref.delete();
+            }
+          });
+          return { data: response };
+        } catch (err) {
+          return { error: err };
+        }
+      },
+    }),
   }),
 });
 
-export const { useFetchTodosQuery } = todosApi;
+export const { useFetchTodosQuery, useRemoveFetchTodosMutation } = todosApi;

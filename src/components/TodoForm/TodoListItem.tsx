@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 import { ITodo } from "../../interfaces";
 
 import { useAppDispatch } from "../../hook";
-import { onEdit, removeTodo, toggleComplete } from "../../store/todoSlice";
+import { onEdit, toggleComplete } from "../../store/todoSlice";
+import { useFetchTodosQuery, useRemoveFetchTodosMutation } from "../../api";
 
 interface IInputCheck {
   inputChecked: boolean;
   inputEditCheck: boolean;
+  removeOpacityCheck: boolean;
 }
 
 interface ITodoItem {
@@ -19,7 +21,7 @@ interface ITodoItem {
 const InputStyled = styled.input``;
 
 const TodoListContainer = styled.li<IInputCheck>`
-  display: flex;
+  display: ${(props) => (props.removeOpacityCheck === true ? "none" : "flex")};
   justify-content: space-between;
   width: 500px;
   border: ${(props) =>
@@ -45,12 +47,41 @@ const IconDeleteStyled = styled.i`
   }
 `;
 
+const rotate360 = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+const Spinner = styled.div`
+  animation: ${rotate360} 1s linear infinite;
+  transform: translateZ(0);
+
+  border-top: 1px solid grey;
+  border-right: 1px solid grey;
+  border-bottom: 1px solid grey;
+  border-left: 1px solid black;
+  background: transparent;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+`;
+
 export const TodoItemList: React.FC<ITodoItem> = (props) => {
   const dispatch = useAppDispatch();
+
+  const [removeTodo, { isLoading }] = useRemoveFetchTodosMutation();
+
+  const result = useFetchTodosQuery();
 
   const [todoItemValue, setTodoItemValue] = useState<string>(props.todo.title);
 
   const [inputEditCheck, setInputEditCheck] = useState<boolean>(false);
+
+  const [removeOpacity, setRemoveOpacity] = useState<boolean>(false);
 
   const handleTodoItemChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -70,9 +101,11 @@ export const TodoItemList: React.FC<ITodoItem> = (props) => {
   const func = (e: React.FocusEvent<HTMLInputElement>) => {
     setInputEditCheck(true);
   };
+
   return (
     <TodoListContainer
       inputEditCheck={inputEditCheck}
+      removeOpacityCheck={removeOpacity}
       inputChecked={props.todo.completed}
       key={props.todo.id}
     >
@@ -91,10 +124,17 @@ export const TodoItemList: React.FC<ITodoItem> = (props) => {
         onChange={handleTodoItemChange}
       />
       <IconDeleteStyled
-        onClick={() => dispatch(removeTodo(props.todo.id))}
+        onClick={() =>
+          removeTodo({
+            id: props.todo.id,
+          }).then(() => {
+            setRemoveOpacity(true);
+            result.refetch();
+          })
+        }
         className="material-icons red-text"
       >
-        delete
+        {isLoading ? <Spinner /> : <>delete</>}
       </IconDeleteStyled>
     </TodoListContainer>
   );

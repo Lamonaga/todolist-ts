@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useFetchTodosQuery } from "../../api";
 import { useAppDispatch } from "../../hook";
 import { addTodo } from "../../store/todoSlice";
 
@@ -23,6 +24,8 @@ const InputFormStyled = styled.input`
 export const TodoForm: React.FC = () => {
   const dispatch = useAppDispatch();
 
+  const result = useFetchTodosQuery();
+
   const [value, setValue] = useState<string>("");
 
   const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,6 +37,7 @@ export const TodoForm: React.FC = () => {
       dispatch(addTodo(value));
     }
     setValue("");
+    result.refetch();
   };
 
   return (
