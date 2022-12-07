@@ -8,7 +8,3 @@ export interface IDataEdit {
   id: number;
   value: string;
 }
-
-export interface TodosState {
-  todos: ITodo[];
-}

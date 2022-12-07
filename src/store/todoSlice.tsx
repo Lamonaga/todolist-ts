@@ -1,36 +1,53 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { db } from "../firebase";
-import { IDataEdit, ITodo, TodosState } from "../interfaces";
+import { IDataEdit, ITodo } from "../interfaces";
+
+interface TodosState {
+  todos: ITodo[];
+  loading: boolean;
+}
 
 const initialState: TodosState = {
   todos: [],
+  loading: true,
 };
 
-export const fetchDataTodos = createAsyncThunk<ITodo[], void>(
-  "todos/fetchDataTodos",
-  async (_) => {
-    const response: Promise<ITodo[]> = db
-      .collection("todoList")
-      .get()
-      .then((querySnapshot) => {
-        const data: ITodo[] = [];
-        querySnapshot.forEach((doc) => {
-          const item = doc.data() as ITodo;
-          data.push(item);
-        });
-        return data;
-      });
-    const data = await response;
-    console.log(data);
-    return data;
-  }
-);
+// export const fetchDataTodos = createAsyncThunk<ITodo[], void>(
+//   "todos/fetchDataTodos",
+//   async (_) => {
+//     const response: Promise<ITodo[]> = db
+//       .collection("todoList")
+//       .get()
+//       .then((querySnapshot) => {
+//         const data: ITodo[] = [];
+//         querySnapshot.forEach((doc) => {
+//           const item = doc.data() as ITodo;
+//           data.push(item);
+//         });
+//         return data;
+//       });
+//     const data = await response;
+//     return data;
+//   }
+// );
 
 const todoSlice = createSlice({
   name: "todos",
   initialState,
   reducers: {
     addTodo(state, action: PayloadAction<string>) {
+      db.collection("todoList")
+        .add({
+          title: action.payload,
+          id: Date.now(),
+          completed: false,
+        })
+        .then((docRef) => {
+          console.log("Document written with ID: ", docRef.id);
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error);
+        });
       state.todos.push({
         title: action.payload,
         id: Date.now(),
@@ -47,6 +64,16 @@ const todoSlice = createSlice({
     },
     removeTodo(state, action: PayloadAction<number>) {
       state.todos = state.todos.filter((todo) => todo.id !== action.payload);
+      db.collection("todoList")
+        .get()
+        .then((todos) => {
+          todos.forEach((todoItem) => {
+            todoItem.data() as ITodo;
+            if (todoItem.data().id === action.payload) {
+              todoItem.ref.delete();
+            }
+          });
+        });
     },
     //ВОТ ТУТ НАДО ПОДУМАТЬ
     onEdit(state, action: PayloadAction<IDataEdit>) {
@@ -57,11 +84,6 @@ const todoSlice = createSlice({
         return todo;
       });
     },
-  },
-  extraReducers: (builder) => {
-    builder.addCase(fetchDataTodos.fulfilled, (state, action) => {
-      state.todos = action.payload;
-    });
   },
 });
 
