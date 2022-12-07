@@ -7,6 +7,7 @@ import { ITodo } from "../../interfaces";
 import {
   useCompletedFetchTodosMutation,
   useEditFetchTodosMutation,
+  useFetchTodosQuery,
   useRemoveFetchTodosMutation,
 } from "../../api";
 import { Spiner } from "../Spiner/Spiner";
@@ -35,7 +36,7 @@ const TodoListContainer = styled.li<IInputCheck>`
   justify-content: space-between;
   width: 500px;
   border: ${(props) =>
-    props.inputEditCheck === true ? "2px black solid" : "1px grey solid"};
+    props.inputEditCheck ? "1px black solid" : "1px grey solid"};
   border-radius: 10px;
   padding: 15px;
   margin-top: 10px;
@@ -66,14 +67,12 @@ const IconDeleteStyled = styled.i`
 export const TodoItemList: React.FC<ITodoItem> = (props) => {
   const [editTodo] = useEditFetchTodosMutation();
 
+  const ref = useFetchTodosQuery();
   const [removeTodo, { isLoading: removeLoading }] =
     useRemoveFetchTodosMutation();
 
-  const [completedTodo, { isLoading: completedLoading }] =
+  const [completedTodo, { isLoading: completedLoading, status }] =
     useCompletedFetchTodosMutation();
-  useEffect(() => {
-    console.log(props.todo);
-  }, [props.todo]);
 
   const [todoItemValue, setTodoItemValue] = useState<string>(props.todo.title);
 
@@ -88,7 +87,6 @@ export const TodoItemList: React.FC<ITodoItem> = (props) => {
     e.preventDefault();
     editTodo({ title: todoItemValue, id: props.todo.id });
   };
-
   return (
     <TodoListContainer
       inputEditCheck={props.todo.completed}
@@ -98,15 +96,17 @@ export const TodoItemList: React.FC<ITodoItem> = (props) => {
     >
       <InputStyled
         className="material-icons"
-        onClick={() => {
-          completedTodo({
+        onClick={async () => {
+          console.log(!props.todo.completed);
+
+          await completedTodo({
             id: props.todo.id,
             completed: !props.todo.completed,
           });
         }}
       >
         {completedLoading ? (
-          <Spiner></Spiner>
+          <Spiner />
         ) : props.todo.completed && !completedLoading ? (
           <>check</>
         ) : (

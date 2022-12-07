@@ -31,16 +31,16 @@ export const todosApi = createApi({
           return { error: err };
         }
       },
-      providesTags: ["reqTodos"],
+      providesTags: (result, error, arg) => {
+        console.log("provider", arg);
+        return [{ type: "reqTodos" }];
+      },
     }),
 
     removeFetchTodos: builder.mutation<{}, IFetchTodo>({
       async queryFn(todo) {
         try {
-          const response = await db
-            .collection("todoList")
-            .orderBy("", "desc")
-            .get();
+          const response = await db.collection("todoList").get();
           response.docs.forEach((doc) => {
             if (doc.data().id === todo.id) {
               doc.ref.delete();
@@ -98,19 +98,23 @@ export const todosApi = createApi({
       async queryFn(todo) {
         try {
           const response = await db.collection("todoList").get();
-          response.docs.forEach((doc) => {
+          response.docs.forEach(async (doc) => {
             if (doc.data().id === todo.id) {
               doc.ref.update({
                 completed: todo.completed,
               });
             }
           });
-          return { data: "ok" };
+          return { data: response.docs };
         } catch (err) {
           return { error: err };
         }
       },
-      invalidatesTags: ["reqTodos"],
+      invalidatesTags: (result, error, arg) => {
+        console.log("arg", arg);
+
+        return [{ type: "reqTodos", id: arg.id, completed: arg.completed }];
+      },
     }),
   }),
 });
