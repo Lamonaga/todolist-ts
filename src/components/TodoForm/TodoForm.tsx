@@ -24,8 +24,6 @@ const InputFormStyled = styled.input`
 `;
 
 export const TodoForm: React.FC = () => {
-  const { refetch } = useFetchTodosQuery();
-
   const [addTodo, { isLoading }] = useAddFetchTodosMutation();
 
   const [value, setValue] = useState<string>("");
@@ -43,7 +41,6 @@ export const TodoForm: React.FC = () => {
       });
     }
     setValue("");
-    refetch();
   };
 
   return (
