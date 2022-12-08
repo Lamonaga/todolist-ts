@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import styled from "styled-components";
 
@@ -14,7 +14,6 @@ import { Spiner } from "../Spiner/Spiner";
 interface IInputCheck {
   inputChecked: boolean;
   inputEditCheck: boolean;
-  removeOpacityCheck: boolean;
 }
 
 interface ITodoItem {
@@ -31,11 +30,11 @@ const InputStyled = styled.i`
 
 const TodoListContainer = styled.li<IInputCheck>`
   min-height: 30px;
-  display: ${(props) => (props.removeOpacityCheck === true ? "none" : "flex")};
+  display: flex;
   justify-content: space-between;
   width: 500px;
   border: ${(props) =>
-    props.inputEditCheck === true ? "2px black solid" : "1px grey solid"};
+    props.inputEditCheck ? "1px black solid" : "1px grey solid"};
   border-radius: 10px;
   padding: 15px;
   margin-top: 10px;
@@ -65,19 +64,13 @@ const IconDeleteStyled = styled.i`
 
 export const TodoItemList: React.FC<ITodoItem> = (props) => {
   const [editTodo] = useEditFetchTodosMutation();
-
   const [removeTodo, { isLoading: removeLoading }] =
     useRemoveFetchTodosMutation();
 
   const [completedTodo, { isLoading: completedLoading }] =
     useCompletedFetchTodosMutation();
-  useEffect(() => {
-    console.log(props.todo);
-  }, [props.todo]);
 
   const [todoItemValue, setTodoItemValue] = useState<string>(props.todo.title);
-
-  const [removeOpacity, setRemoveOpacity] = useState<boolean>(false);
 
   const handleTodoItemChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -88,11 +81,9 @@ export const TodoItemList: React.FC<ITodoItem> = (props) => {
     e.preventDefault();
     editTodo({ title: todoItemValue, id: props.todo.id });
   };
-
   return (
     <TodoListContainer
       inputEditCheck={props.todo.completed}
-      removeOpacityCheck={removeOpacity}
       inputChecked={props.todo.completed}
       key={props.todo.id}
     >
@@ -105,13 +96,7 @@ export const TodoItemList: React.FC<ITodoItem> = (props) => {
           });
         }}
       >
-        {completedLoading ? (
-          <Spiner></Spiner>
-        ) : props.todo.completed && !completedLoading ? (
-          <>check</>
-        ) : (
-          <>close</>
-        )}
+        {props.todo.completed ? <>check</> : <>close</>}
       </InputStyled>
       <TitleInputStyled
         value={todoItemValue}
@@ -123,8 +108,6 @@ export const TodoItemList: React.FC<ITodoItem> = (props) => {
         onClick={() =>
           removeTodo({
             id: props.todo.id,
-          }).then(() => {
-            setRemoveOpacity(true);
           })
         }
         className="material-icons red-text"

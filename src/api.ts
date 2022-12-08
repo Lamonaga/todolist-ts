@@ -37,10 +37,7 @@ export const todosApi = createApi({
     removeFetchTodos: builder.mutation<{}, IFetchTodo>({
       async queryFn(todo) {
         try {
-          const response = await db
-            .collection("todoList")
-            .orderBy("", "desc")
-            .get();
+          const response = await db.collection("todoList").get();
           response.docs.forEach((doc) => {
             if (doc.data().id === todo.id) {
               doc.ref.delete();
@@ -51,7 +48,18 @@ export const todosApi = createApi({
           return { error: err };
         }
       },
-      invalidatesTags: ["reqTodos"],
+      async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          todosApi.util.updateQueryData("fetchTodos", undefined, (draft) => {
+            draft.todos = draft.todos.filter((element) => element.id !== id);
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
     }),
     addFetchTodos: builder.mutation<{}, ITodo>({
       queryFn(todo) {
@@ -105,12 +113,28 @@ export const todosApi = createApi({
               });
             }
           });
-          return { data: "ok" };
+
+          return { data: response.docs };
         } catch (err) {
           return { error: err };
         }
       },
-      invalidatesTags: ["reqTodos"],
+      async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          todosApi.util.updateQueryData("fetchTodos", undefined, (draft) => {
+            const item = draft.todos.find((element) => element.id === id);
+            if (item) {
+              item.completed = !item.completed;
+              console.log("asdasd");
+            }
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
     }),
   }),
 });
@@ -121,4 +145,5 @@ export const {
   useAddFetchTodosMutation,
   useEditFetchTodosMutation,
   useCompletedFetchTodosMutation,
+  useLazyFetchTodosQuery,
 } = todosApi;
