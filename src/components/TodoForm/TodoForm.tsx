@@ -1,11 +1,15 @@
 import React, { useState } from "react";
+
 import styled from "styled-components";
-import { useAddFetchTodosMutation, useFetchTodosQuery } from "../../api";
+
+import { useAddFetchTodosMutation } from "../../api";
+
 import { Spiner } from "../Spiner/Spiner";
 
 const ContainerFormStyled = styled.form`
   display: flex;
 `;
+
 const SubmitButtonStyled = styled.button`
   min-width: 100px;
   margin: 0 10px;
@@ -47,7 +51,7 @@ export const TodoForm: React.FC = () => {
     <ContainerFormStyled onSubmit={handleSubmit}>
       <InputFormStyled type="text" value={value} onChange={changeHandler} />
       <SubmitButtonStyled disabled={!value} type="submit">
-        {!isLoading ? <>Отправить</> : <Spiner />}
+        {!isLoading ? <>Отправить</> : <Spiner width="12px" height="12px" />}
       </SubmitButtonStyled>
     </ContainerFormStyled>
   );

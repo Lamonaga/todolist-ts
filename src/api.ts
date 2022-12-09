@@ -1,5 +1,7 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import { db } from "./firebase";
+
 import { ITodo } from "./interfaces";
 
 interface IQueryTodo {
@@ -104,6 +106,7 @@ export const todosApi = createApi({
     }),
     completedFetchTodos: builder.mutation<{}, IFetchTodo>({
       async queryFn(todo) {
+        let isCheckedResponse = true;
         try {
           const response = await db.collection("todoList").get();
           response.docs.forEach((doc) => {
@@ -114,7 +117,7 @@ export const todosApi = createApi({
             }
           });
 
-          return { data: response.docs };
+          return { data: isCheckedResponse };
         } catch (err) {
           return { error: err };
         }

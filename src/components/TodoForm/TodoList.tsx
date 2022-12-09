@@ -1,7 +1,9 @@
 import React from "react";
+
 import { useFetchTodosQuery } from "../../api";
 
 import { ITodo } from "../../interfaces";
+import { Spiner } from "../Spiner/Spiner";
 import { TodoItemList } from "./TodoListItem";
 
 export const TodoList: React.FC = () => {
@@ -9,12 +11,12 @@ export const TodoList: React.FC = () => {
 
   return (
     <ul>
-      {data !== undefined ? (
+      {data ? (
         data.todos.map((todo: ITodo) => {
           return <TodoItemList key={todo.id} todo={todo} />;
         })
       ) : (
-        <div> LOADING</div>
+        <Spiner width="48px" height="48px" />
       )}
     </ul>
   );

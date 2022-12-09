@@ -1,12 +1,17 @@
-import { Provider } from "react-redux";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+
+import "./index.css";
+
+import { Provider } from "react-redux";
 import { ThemeProvider } from "styled-components";
 import { myTheme } from "./my-them";
+
+import App from "./App";
+
 import "firebase/firestore";
+
 import store from "./store";
 
 const root = ReactDOM.createRoot(
