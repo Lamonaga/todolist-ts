@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import styled from "styled-components";
 
 import { ITodo } from "../../interfaces";
@@ -9,6 +8,7 @@ import {
   useEditFetchTodosMutation,
   useRemoveFetchTodosMutation,
 } from "../../api";
+
 import { Spiner } from "../Spiner/Spiner";
 
 interface IInputCheck {
@@ -38,7 +38,7 @@ const TodoListContainer = styled.li<IInputCheck>`
   border-radius: 10px;
   padding: 15px;
   margin-top: 10px;
-  background: ${(props) => (props.inputChecked ? "green" : null)};
+  background: ${(props) => (props.inputChecked ? "green" : "#fff")};
 `;
 
 const TitleInputStyled = styled.input`
@@ -64,6 +64,7 @@ const IconDeleteStyled = styled.i`
 
 export const TodoItemList: React.FC<ITodoItem> = (props) => {
   const [editTodo] = useEditFetchTodosMutation();
+
   const [removeTodo, { isLoading: removeLoading }] =
     useRemoveFetchTodosMutation();
 
@@ -81,10 +82,15 @@ export const TodoItemList: React.FC<ITodoItem> = (props) => {
     e.preventDefault();
     editTodo({ title: todoItemValue, id: props.todo.id });
   };
+  console.log("props. :>> ", props.todo.completed);
   return (
     <TodoListContainer
       inputEditCheck={props.todo.completed}
-      inputChecked={props.todo.completed}
+      inputChecked={
+        props.todo.completed
+          ? !completedLoading && true
+          : !completedLoading && false
+      }
       key={props.todo.id}
     >
       <InputStyled
@@ -96,7 +102,13 @@ export const TodoItemList: React.FC<ITodoItem> = (props) => {
           });
         }}
       >
-        {props.todo.completed ? <>check</> : <>close</>}
+        {completedLoading ? (
+          <Spiner />
+        ) : props.todo.completed ? (
+          <>check</>
+        ) : (
+          <>close</>
+        )}
       </InputStyled>
       <TitleInputStyled
         value={todoItemValue}
